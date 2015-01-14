@@ -1058,7 +1058,7 @@ public class FreeStyleMultiBranchProject extends
 		Map<String, SCMHead> branches = new HashMap<String, SCMHead>();
 		Set<String> newBranches = new HashSet<String>();
 		for (SCMHead head : heads) {
-			String branchName = head.getName();
+			String branchName = head.getName().replaceAll("_", "__").replaceAll("/", "_");
 			branches.put(branchName, head);
 
 			if (!getSubProjects().containsKey(branchName)) {
