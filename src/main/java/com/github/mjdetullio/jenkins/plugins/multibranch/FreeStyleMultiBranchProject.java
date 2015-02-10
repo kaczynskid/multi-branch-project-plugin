@@ -1106,14 +1106,14 @@ public class FreeStyleMultiBranchProject extends
 				if (!wasDisabled) {
 					project.enable();
 				}
+                project.updateUpstreamDependencies();
 				project.save();
 				//noinspection unchecked
 				project.onLoad(project.getParent(), project.getName());
 
 				// Build new SCM with the URL and branch already set
-				project.setScm(
-						scmSource.build(branches.get(project.getName())));
-				project.save();
+                project.setScm(scmSource.build(branches.get(project.getName())));
+                project.save();
 			} catch (Throwable e) {
 				e.printStackTrace(listener.fatalError(e.getMessage()));
 			}

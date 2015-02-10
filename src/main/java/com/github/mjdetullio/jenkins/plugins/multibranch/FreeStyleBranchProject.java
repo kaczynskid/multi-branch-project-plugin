@@ -24,6 +24,8 @@
 package com.github.mjdetullio.jenkins.plugins.multibranch;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 
 import org.kohsuke.stapler.StaplerRequest;
@@ -37,6 +39,7 @@ import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
+import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Items;
@@ -49,6 +52,7 @@ import hudson.triggers.TriggerDescriptor;
 import hudson.util.CopyOnWriteList;
 import hudson.util.DescribableList;
 import jenkins.model.Jenkins;
+import jenkins.triggers.ReverseBuildTrigger;
 
 /**
  * Wrapper for the {@link Project} class that imitates normal {@link
@@ -199,7 +203,24 @@ public class FreeStyleBranchProject
 		super.doConfigDotXml(req, rsp);
 	}
 
-	/**
+    public void updateUpstreamDependencies() {
+        ReverseBuildTrigger trigger = getUpstreamTrigger();
+        if (trigger == null) {
+            return; // nothing to update
+        }
+        new ReverseBuildTriggerUpdater(trigger).updateForBranch(getName());
+    }
+
+    private ReverseBuildTrigger getUpstreamTrigger() {
+        for (Trigger<?> trigger : getTriggers().values()) {
+            if (trigger instanceof ReverseBuildTrigger) {
+                return (ReverseBuildTrigger) trigger;
+            }
+        }
+        return null;
+    }
+
+    /**
 	 * This project type has to be a {@link TopLevelItem} in order to be shown
 	 * in the multi-branch project's branch list, but {@link TopLevelItem}s are
 	 * also shown in the new job list.  This hack will remove this project type
