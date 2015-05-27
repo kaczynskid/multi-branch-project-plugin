@@ -1034,6 +1034,8 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 					project.enable();
 				}
 
+				updateUpstreamDependencies(project);
+
 				// Work-around for JENKINS-21017
 				project.setCustomWorkspace(
 						templateProject.getCustomWorkspace());
@@ -1065,6 +1067,8 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 			}
 		}
 	}
+
+	protected void updateUpstreamDependencies(P project) {}
 
 	/**
 	 * Used by Jelly to populate the Sync Branches Schedule field on the

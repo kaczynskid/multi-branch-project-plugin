@@ -32,7 +32,9 @@ import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
+import hudson.triggers.Trigger;
 import jenkins.model.Jenkins;
+import jenkins.triggers.ReverseBuildTrigger;
 
 /**
  * @author Matthew DeTullio
@@ -74,6 +76,28 @@ public class FreeStyleMultiBranchProject extends AbstractMultiBranchProject
 	@Override
 	protected Class<FreeStyleBuild> getBuildClass() {
 		return FreeStyleBuild.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void updateUpstreamDependencies(FreeStyleProject project) {
+		ReverseBuildTrigger trigger = getUpstreamTrigger(project);
+		if (trigger == null) {
+			return; // nothing to update
+		}
+		new ReverseBuildTriggerUpdater(trigger).updateForBranch(getName());
+	}
+
+
+	private ReverseBuildTrigger getUpstreamTrigger(FreeStyleProject project) {
+		for (Trigger<?> trigger : project.getTriggers().values()) {
+			if (trigger instanceof ReverseBuildTrigger) {
+				return (ReverseBuildTrigger) trigger;
+			}
+		}
+		return null;
 	}
 
 	/**
