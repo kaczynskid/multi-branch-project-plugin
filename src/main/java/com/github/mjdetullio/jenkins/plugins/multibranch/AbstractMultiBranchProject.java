@@ -130,7 +130,7 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 
 	protected transient P templateProject;
 
-	private final transient Map<String, P> subProjects = new ConcurrentHashMap<String, P>();
+	private transient Map<String, P> subProjects = new ConcurrentHashMap<String, P>();
 
 	private List<String> disabledSubProjects;
 
@@ -399,6 +399,11 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 	 */
 	protected Map<String, P> getSubProjects() {
 		return subProjects;
+	}
+
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		subProjects = new ConcurrentHashMap<String, P>();
 	}
 
 	/**
