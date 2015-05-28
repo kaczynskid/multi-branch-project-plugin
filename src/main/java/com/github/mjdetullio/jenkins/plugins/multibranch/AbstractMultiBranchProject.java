@@ -130,7 +130,7 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 
 	protected transient P templateProject;
 
-	private transient Map<String, P> subProjects = new ConcurrentHashMap<String, P>();
+	private final transient Map<String, P> subProjects = new ConcurrentHashMap<String, P>();
 
 	private List<String> disabledSubProjects;
 
