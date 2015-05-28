@@ -156,17 +156,20 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 	 */
 	@Override
 	public void onLoad(ItemGroup<? extends Item> parent, String name) throws IOException {
-		subProjects = new ConcurrentHashMap<String, P>();
+		if (subProjects == null) {
+			subProjects = new ConcurrentHashMap<String, P>();
+		}
+		if (disabledSubProjects == null) {
+			disabledSubProjects = new PersistedList<String>(this);
+		}
+
 		super.onLoad(parent, name);
+
 		runBranchProjectMigration();
 		init();
 	}
 
 	private synchronized void runBranchProjectMigration() {
-		if (disabledSubProjects == null) {
-			disabledSubProjects = new PersistedList<String>(this);
-		}
-
 		List<File> subProjects = new ArrayList<File>();
 		subProjects.add(getTemplateDir());
 
