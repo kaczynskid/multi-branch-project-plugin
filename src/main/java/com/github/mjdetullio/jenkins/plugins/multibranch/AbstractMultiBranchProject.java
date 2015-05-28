@@ -130,7 +130,9 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 
 	protected transient P templateProject;
 
-	private transient Map<String, P> subProjects = new ConcurrentHashMap<String, P>();
+	private transient Map<String, P> subProjects;
+
+	private final Integer subProjectsLock = new Integer(0);
 
 	private List<String> disabledSubProjects;
 
@@ -398,12 +400,12 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 	 * Retrieves the collection of sub-projects for this project.
 	 */
 	protected Map<String, P> getSubProjects() {
-		return subProjects;
-	}
-
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
-		subProjects = new ConcurrentHashMap<String, P>();
+		synchronized (subProjectsLock) {
+			if (subProjects == null) {
+				subProjects = new LinkedHashMap<String, P>();
+			}
+			return subProjects;
+		}
 	}
 
 	/**
