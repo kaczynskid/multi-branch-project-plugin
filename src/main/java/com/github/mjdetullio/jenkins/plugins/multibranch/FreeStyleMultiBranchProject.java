@@ -87,9 +87,8 @@ public class FreeStyleMultiBranchProject extends AbstractMultiBranchProject
 		if (trigger == null) {
 			return; // nothing to update
 		}
-		new ReverseBuildTriggerUpdater(trigger).updateForBranch(getName());
+		new ReverseBuildTriggerUpdater(trigger).updateForBranch(project.getName());
 	}
-
 
 	private ReverseBuildTrigger getUpstreamTrigger(FreeStyleProject project) {
 		for (Trigger<?> trigger : project.getTriggers().values()) {
