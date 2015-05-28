@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -130,9 +131,7 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 
 	protected transient P templateProject;
 
-	private transient Map<String, P> subProjects;
-
-	private final Integer subProjectsLock = new Integer(0);
+	private transient Map<String, P> subProjects = new ConcurrentHashMap<String, P>();
 
 	private List<String> disabledSubProjects;
 
@@ -156,8 +155,8 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onLoad(ItemGroup<? extends Item> parent, String name)
-			throws IOException {
+	public void onLoad(ItemGroup<? extends Item> parent, String name) throws IOException {
+		subProjects = new ConcurrentHashMap<String, P>();
 		super.onLoad(parent, name);
 		runBranchProjectMigration();
 		init();
@@ -400,12 +399,7 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 	 * Retrieves the collection of sub-projects for this project.
 	 */
 	protected Map<String, P> getSubProjects() {
-		synchronized (subProjectsLock) {
-			if (subProjects == null) {
-				subProjects = new LinkedHashMap<String, P>();
-			}
-			return subProjects;
-		}
+		return subProjects;
 	}
 
 	/**
