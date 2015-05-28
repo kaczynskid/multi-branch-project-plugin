@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,7 +130,7 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 
 	protected transient P templateProject;
 
-	private transient Map<String, P> subProjects;
+	private transient Map<String, P> subProjects = new ConcurrentHashMap<String, P>();
 
 	private List<String> disabledSubProjects;
 
@@ -396,10 +397,7 @@ public abstract class AbstractMultiBranchProject<P extends AbstractProject<P, B>
 	/**
 	 * Retrieves the collection of sub-projects for this project.
 	 */
-	protected synchronized Map<String, P> getSubProjects() {
-		if (subProjects == null) {
-			subProjects = new LinkedHashMap<String, P>();
-		}
+	protected Map<String, P> getSubProjects() {
 		return subProjects;
 	}
 
